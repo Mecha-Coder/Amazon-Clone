@@ -1,39 +1,35 @@
-import {products} from '../data/products.js';
+import { products } from "../data/products.js";
 
-let cart = []
+let cart = [];
 let timerIdList = {};
 
 //-------------------------------------------------------------------
 
 // 1) Load product to page
-const productGrid = document.querySelector('.products-grid')
-loadProduct()
-
+const productGrid = document.querySelector(".products-grid");
+loadProduct();
 
 // 2) Load saved cart data if available |ELSE| use blank cart data
-getLatestCart()
+getLatestCart();
 
-// 3) Add event listener - Add-Cart clicked, add to cart 
-const addCartButton = document.querySelectorAll('.js-add-to-cart')
+// 3) Add event listener - Add-Cart clicked, add to cart
+const addCartButton = document.querySelectorAll(".js-add-to-cart");
 
-addCartButton.forEach((button)=>{
-  button.addEventListener('click', () => {
-
-    const {productId} = button.dataset;
+addCartButton.forEach((button) => {
+  button.addEventListener("click", () => {
+    const { productId } = button.dataset;
     addToCart(productId);
-    updateCartHeader()
-
-  })
-})
+    updateCartHeader();
+  });
+});
 
 // Scripts ----------------------------------------------------
 
-function loadProduct(){
+function loadProduct() {
   // Load all products on the page using products.js file
 
-  let addProduct = ''
+  let addProduct = "";
   products.forEach((product) => {
-
     addProduct += `
       <div class="product-container">
 
@@ -48,7 +44,7 @@ function loadProduct(){
 
         <div class="product-rating-container">
           <img class="product-rating-stars"
-            src="images/ratings/rating-${product.rating.stars*10}.png">
+            src="images/ratings/rating-${product.rating.stars * 10}.png">
           <div class="product-rating-count link-primary">
             ${product.rating.count}
           </div>
@@ -85,79 +81,79 @@ function loadProduct(){
           Add to Cart
         </button>
 
-      </div>`
-  })  
+      </div>`;
+  });
   productGrid.innerHTML += addProduct;
 }
 
-function getLatestCart(){
-  const savedData = localStorage.getItem('cart')
+function getLatestCart() {
+  const savedData = localStorage.getItem("cart");
 
-  if(savedData){
-    cart = JSON.parse(savedData) 
-  }   
-  updateCartHeader()
+  if (savedData) {
+    cart = JSON.parse(savedData);
+  }
+  updateCartHeader();
 }
 
-function addToCart(currentProductID){
-
+function addToCart(currentProductID) {
   // Check if product already exit in cart
   let itemMatched;
 
-  for(let i=0 ; i<cart.length ; i++){
-    if(cart[i].productId === currentProductID){
+  for (let i = 0; i < cart.length; i++) {
+    if (cart[i].productId === currentProductID) {
       itemMatched = cart[i];
       break;
     }
   }
 
-  // Add product with reqested quantity |OR| update quantity 
-  const requestedQty = document.querySelector(`.quantity-selector-${currentProductID}`)
+  // Add product with reqested quantity |OR| update quantity
+  const requestedQty = document.querySelector(
+    `.quantity-selector-${currentProductID}`
+  );
 
   if (itemMatched) {
-    itemMatched.quantity += Number(requestedQty.value)
+    itemMatched.quantity += Number(requestedQty.value);
   } else {
-    cart.push(
-      {
-        productId: currentProductID,
-        quantity: Number(requestedQty.value),
-      }
-    )
+    cart.push({
+      productId: currentProductID,
+      quantity: Number(requestedQty.value),
+    });
   }
 
   // Reset quantity selector dropdown after item is added to cart
   requestedQty.value = 1;
 
   //Save latest cart data to local storage
-  localStorage.setItem ('cart',JSON.stringify(cart))
-  
+  localStorage.setItem("cart", JSON.stringify(cart));
+
   // Display added message (with delay animation)
-  const addMsg = document.querySelector(`.added-msg-${currentProductID}`)
+  const addMsg = document.querySelector(`.added-msg-${currentProductID}`);
 
-  addMsg.classList.add('appear') //Change opacity to 1
-    
-      // Track timer and reset accordingly
-      if(timerIdList[currentProductID]){
-        clearInterval(timerIdList[currentProductID])
-      }
+  addMsg.classList.add("appear"); //Change opacity to 1
 
-      let timerID = setTimeout(() => {addMsg.classList.remove('appear')},1250)
-      timerIdList[currentProductID] = timerID
+  // Track timer and reset accordingly
+  if (timerIdList[currentProductID]) {
+    clearInterval(timerIdList[currentProductID]);
+  }
 
+  let timerID = setTimeout(() => {
+    addMsg.classList.remove("appear");
+  }, 1250);
+  timerIdList[currentProductID] = timerID;
 }
 
-function updateCartHeader(){
+function updateCartHeader() {
+  const cartQuantity = document.querySelector(".cart-quantity");
+  let countCart = 0;
+  cart.forEach((item) => {
+    countCart += item.quantity;
+  });
 
-  const cartQuantity = document.querySelector('.cart-quantity')
-  let countCart = 0
-  cart.forEach((item) => {countCart+=item.quantity})
-  
-  if (countCart){
-    cartQuantity.innerText = countCart
-  } else
-    cartQuantity.innerText = ''
+  if (countCart) {
+    cartQuantity.innerText = countCart;
+  } else cartQuantity.innerText = "";
 }
 
-function toDollar(cents){
-  return (cents/100).toFixed(2)
+function toDollar(cents) {
+  return (cents / 100).toFixed(2);
 }

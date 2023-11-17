@@ -1,73 +1,67 @@
-import {products} from '../data/products.js'
+import { products } from "../data/products.js";
+import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
+import { deliveryOption } from "../data/delivery_option.js";
+
+// Date libary
+const today = dayjs();
+
 let sumShipCost = {};
 
 //---------------------------------------------------------
 // 1) Load cart data
-let cart = '';
-loadCartData() 
-
+let cart = "";
+loadCartData();
 
 // 2) Load orders based on cart info
-const orderGrid = document.querySelector('.order-summary')
-loadOrderSummary()
-
+const orderGrid = document.querySelector(".order-summary");
+loadOrderSummary();
 
 // 3) Update item quantity - header & Order Summary Box
-updateItemQty()
-
+updateItemQty();
 
 // 4) Calculate cost summary
-printCostSummary()
+printCostSummary();
 
-// 5) Add event listener 
+// 5) Add event listener
 //   [a] click delete, remove order from page & cart update
-const deleteOrderLink = document.querySelectorAll('.delete-quantity-link')
-clickDelete()
-
-
+const deleteOrderLink = document.querySelectorAll(".delete-quantity-link");
+clickDelete();
 
 //   [b] clicked update, request user-input for latest quantity
-const updateQtyLink = document.querySelectorAll('.update-quantity-link')
-clickUpdate()
-
+const updateQtyLink = document.querySelectorAll(".update-quantity-link");
+clickUpdate();
 
 //   [c] clicked save, display saved quantity & update cart
-const saveQtyLink = document.querySelectorAll('.save-quantity-link')
-clickSave()
-
+const saveQtyLink = document.querySelectorAll(".save-quantity-link");
+clickSave();
 
 //   [d] click delivery options, update delivery date & calculation
-const radioButton = document.querySelectorAll('.delivery-option-input') 
-clickRadioButton()
-
+const radioButton = document.querySelectorAll(".delivery-option-input");
+clickRadioButton();
 
 // Scripts -------------------------------------------------
 
+function loadCartData() {
+  const savedData = localStorage.getItem("cart");
 
-function loadCartData(){
-  const savedData = localStorage.getItem('cart')
-
-  if(savedData){
-    cart = JSON.parse(savedData); 
+  if (savedData) {
+    cart = JSON.parse(savedData);
   } else {
-    
-  } 
+  }
 }
 
-function loadOrderSummary(){
-  let orderList = '';
+function loadOrderSummary() {
+  let orderList = "";
 
-cart.forEach((item)=>{
-  
-  // From item ID, get product details
-  let productDetail = getProductDetail(item.productId)
-    
-  //Generate order HTML list
-  orderList +=  
-   `<div class="cart-item-container js-select-${item.productId}">
+  cart.forEach((item) => {
+    // From item ID, get product details
+    let productDetail = getProductDetail(item.productId);
+
+    //Generate order HTML list
+    orderList += `<div class="cart-item-container js-select-${item.productId}">
 
       <div class="delivery-date display-delivery-${item.productId}">
-        Delivery date: Tuesday, June 21
+        Delivery date: ${today.add(7, "days").format("dddd, MMMM D")}
       </div>
 
       <div class="cart-item-details-grid">
@@ -79,7 +73,7 @@ cart.forEach((item)=>{
               ${productDetail.name}
             </div>
             <div class="product-price">
-              $${(productDetail.priceCents/100).toFixed(2)}
+              $${(productDetail.priceCents / 100).toFixed(2)}
             </div>
             <div class="product-quantity">
               <span>
@@ -87,12 +81,16 @@ cart.forEach((item)=>{
                 quantity-${item.productId} show">
                 ${item.quantity}</span>
               </span>
-              <span class="update-quantity-link link-primary hide-${item.productId} show"
+              <span class="update-quantity-link link-primary hide-${
+                item.productId
+              } show"
               data-product-id=${item.productId}>
                 Update
               </span>
                             
-              <select class="quantity-input link-primary edit-panel-${item.productId} 
+              <select class="quantity-input link-primary edit-panel-${
+                item.productId
+              } 
               selector-${item.productId}">
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -106,7 +104,9 @@ cart.forEach((item)=>{
                   <option value="10">10</option>
                 </select>
 
-              <span class="save-quantity-link link-primary edit-panel-${item.productId}"
+              <span class="save-quantity-link link-primary edit-panel-${
+                item.productId
+              }"
               data-product-id=${item.productId}>
                 Save
               </span>
@@ -128,12 +128,14 @@ cart.forEach((item)=>{
                 class="delivery-option-input"
                 name="delivery-option-${item.productId}"
                 data-product-id="${item.productId}"
-                data-delivery-date="Tuesday, June 21"
+                data-delivery-date="${today
+                  .add(7, "days")
+                  .format("dddd, MMMM D")}"
                 data-shipping-cost= 0
                 >
               <div>
                 <div class="delivery-option-date">
-                  Tuesday, June 21
+                  ${today.add(7, "days").format("dddd, MMMM D")}
                 </div>
                 <div class="delivery-option-price">
                   FREE Shipping
@@ -146,12 +148,14 @@ cart.forEach((item)=>{
                 class="delivery-option-input"
                 name="delivery-option-${item.productId}"
                 data-product-id="${item.productId}"
-                data-delivery-date="Wednesday, June 15"
+                data-delivery-date="${today
+                  .add(3, "days")
+                  .format("dddd, MMMM D")}"
                 data-shipping-cost= 499
                 >
               <div>
                 <div class="delivery-option-date">
-                  Wednesday, June 15
+                  ${today.add(3, "days").format("dddd, MMMM D")}
                 </div>
                 <div class="delivery-option-price">
                   $4.99 - Shipping
@@ -164,12 +168,14 @@ cart.forEach((item)=>{
                 class="delivery-option-input"
                 name="delivery-option-${item.productId}"
                 data-product-id="${item.productId}"
-                data-delivery-date="Monday, June 13"
+                data-delivery-date="${today
+                  .add(1, "days")
+                  .format("dddd, MMMM D")}"
                 data-shipping-cost= 999
                 >
               <div>
                 <div class="delivery-option-date">
-                  Monday, June 13
+                  ${today.add(1, "days").format("dddd, MMMM D")}
                 </div>
                 <div class="delivery-option-price">
                   $9.99 - Shipping
@@ -180,22 +186,20 @@ cart.forEach((item)=>{
           </div>
 
       </div>
-  </div>`
+  </div>`;
 
-  // Set default shipping cost to zero
-  sumShipCost[item.productId] = 0;
-})
+    // Set default shipping cost to zero
+    sumShipCost[item.productId] = 0;
+  });
 
-orderGrid.innerHTML = orderList
+  orderGrid.innerHTML = orderList;
 }
 
-function removeOrder(currentProductID){
-
-  for(let i=0; i<cart.length ; i++){
-    if(cart[i].productId === currentProductID){
-
+function removeOrder(currentProductID) {
+  for (let i = 0; i < cart.length; i++) {
+    if (cart[i].productId === currentProductID) {
       // Remove order from cart
-      cart.splice(i,1);
+      cart.splice(i, 1);
 
       // Remove order from page
       document.querySelector(`.js-select-${currentProductID}`).remove();
@@ -204,159 +208,150 @@ function removeOrder(currentProductID){
       delete sumShipCost[currentProductID];
 
       // Save latest cart data to local storage
-      localStorage.setItem ('cart',JSON.stringify(cart));
+      localStorage.setItem("cart", JSON.stringify(cart));
 
       break;
     }
   }
 }
 
-function updateItemQty(){
+function updateItemQty() {
+  let countCart = 0;
+  cart.forEach((item) => {
+    countCart += item.quantity;
+  });
 
-  let countCart = 0
-  cart.forEach((item) => {countCart+=item.quantity})
-  
   // Update item quantity @ payment-summary
-  document.querySelector('.update-qty-2').innerHTML = `Items(${countCart}):`
+  document.querySelector(".update-qty-2").innerHTML = `Items(${countCart}):`;
 
   // Update item quantity @ header-checkout
-  countCart ? document.querySelector('.update-qty-1').innerHTML = `${countCart} items` :
-              document.querySelector('.update-qty-1').innerHTML = 'No item'
-    
+  countCart
+    ? (document.querySelector(".update-qty-1").innerHTML = `${countCart} items`)
+    : (document.querySelector(".update-qty-1").innerHTML = "No item");
 }
 
-function clickDelete(){
-
+function clickDelete() {
   deleteOrderLink.forEach((link) => {
-    link.addEventListener('click',() => {
-      
-      const {productId} = link.dataset;
-      removeOrder(productId)
-      updateItemQty()
-      printCostSummary()
-    })
-  })
+    link.addEventListener("click", () => {
+      const { productId } = link.dataset;
+      removeOrder(productId);
+      updateItemQty();
+      printCostSummary();
+    });
+  });
 }
 
-function clickUpdate(){
-
-  updateQtyLink.forEach((link)=>{
-    link.addEventListener('click', ()=> {
-  
-      const {productId} = link.dataset;
+function clickUpdate() {
+  updateQtyLink.forEach((link) => {
+    link.addEventListener("click", () => {
+      const { productId } = link.dataset;
 
       // Set dropdown selector value per actual quantity instead of 1
-      const qtySelector = document.querySelector(`.selector-${productId}`)
-      const qtyActual = document.querySelector(`.quantity-${productId}`)
+      const qtySelector = document.querySelector(`.selector-${productId}`);
+      const qtyActual = document.querySelector(`.quantity-${productId}`);
 
-      qtySelector.value = qtyActual.innerText
-      
-      
+      qtySelector.value = qtyActual.innerText;
+
       // Show quantity edit panel
-      document.querySelectorAll(`.edit-panel-${productId}`).forEach((element) => {
-        element.classList.add('show')
-      })
-      
+      document
+        .querySelectorAll(`.edit-panel-${productId}`)
+        .forEach((element) => {
+          element.classList.add("show");
+        });
+
       // Hide, current quantity no. & Update link
       document.querySelectorAll(`.hide-${productId}`).forEach((element) => {
-        element.classList.remove('show')
-      })
-
-    })
-  })
+        element.classList.remove("show");
+      });
+    });
+  });
 }
 
-function clickSave(){
-
-  saveQtyLink.forEach((link)=>{
-    link.addEventListener('click', ()=> {
-  
-      const {productId} = link.dataset;
+function clickSave() {
+  saveQtyLink.forEach((link) => {
+    link.addEventListener("click", () => {
+      const { productId } = link.dataset;
 
       // Update page quantity
-      const qtySelector = document.querySelector(`.selector-${productId}`)
-      const qtyActual = document.querySelector(`.quantity-${productId}`)
+      const qtySelector = document.querySelector(`.selector-${productId}`);
+      const qtyActual = document.querySelector(`.quantity-${productId}`);
 
-      qtyActual.innerText = qtySelector.value
+      qtyActual.innerText = qtySelector.value;
 
       // Update cart quantity
-      saveNewQty(productId,Number(qtySelector.value))
+      saveNewQty(productId, Number(qtySelector.value));
 
       // Update quantity @ header & order-summary
-      updateItemQty()
+      updateItemQty();
 
       // Hide quantity edit panel
-      document.querySelectorAll(`.edit-panel-${productId}`).forEach((element) => {
-        element.classList.remove('show')
-      })
-      
+      document
+        .querySelectorAll(`.edit-panel-${productId}`)
+        .forEach((element) => {
+          element.classList.remove("show");
+        });
+
       // Re-appear, current quantity no. & Update link
       document.querySelectorAll(`.hide-${productId}`).forEach((element) => {
-        element.classList.add('show')
-      })
+        element.classList.add("show");
+      });
 
       // Recalculate cost
-      printCostSummary()
-  
-    })
-  })
-
+      printCostSummary();
+    });
+  });
 }
 
-function saveNewQty(currentProductID,newQty){
-  
-  for(let i=0; i<cart.length ; i++){
-    if(cart[i].productId === currentProductID){
-
+function saveNewQty(currentProductID, newQty) {
+  for (let i = 0; i < cart.length; i++) {
+    if (cart[i].productId === currentProductID) {
       // Update quantity in cart item
-      cart[i].quantity = newQty
+      cart[i].quantity = newQty;
       // Save latest cart data to local storage
-      localStorage.setItem ('cart',JSON.stringify(cart))
+      localStorage.setItem("cart", JSON.stringify(cart));
       break;
     }
   }
 }
 
-function clickRadioButton(){
+function clickRadioButton() {
   radioButton.forEach((button) => {
-    button.addEventListener('click', ()=> {
-  
-      const {productId, deliveryDate, shippingCost} = button.dataset
-      
+    button.addEventListener("click", () => {
+      const { productId, deliveryDate, shippingCost } = button.dataset;
+
       // Update selected delivery date
-      const displayDelivery = document.querySelector(`.display-delivery-${productId}`)
-      displayDelivery.innerText = `Delivery date: ${deliveryDate}`
+      const displayDelivery = document.querySelector(
+        `.display-delivery-${productId}`
+      );
+      displayDelivery.innerText = `Delivery date: ${deliveryDate}`;
 
       // Update cost in sumShipCost object
-      sumShipCost[productId] = Number(shippingCost)
+      sumShipCost[productId] = Number(shippingCost);
 
       //Recalculate cost
-      printCostSummary()
-    })
-  })
+      printCostSummary();
+    });
+  });
 }
 
-function getProductDetail(currentProductID){
+function getProductDetail(currentProductID) {
   //Using the current Product ID, search matching product in product.js
   //Return: product object will contains product details
 
   let productDetail;
-  for(let i=0; i<products.length ; i++){
-
-    if (products[i].id === currentProductID){
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].id === currentProductID) {
       productDetail = products[i];
       return productDetail;
     }
   }
-
 }
 
-function toDollar(cents){
-  return (cents/100).toFixed(2)
+function toDollar(cents) {
+  return (cents / 100).toFixed(2);
 }
 
-function printCostSummary(){
-
+function printCostSummary() {
   let costItems = 0;
   let costShipping = 0;
   let costItemShip = 0;
@@ -364,24 +359,25 @@ function printCostSummary(){
   let costTotal = 0;
 
   cart.forEach((item) => {
-
     // From item ID, get product details
     let productDetail = getProductDetail(item.productId);
- 
-    costItems    += productDetail.priceCents *  item.quantity;
-    costShipping += sumShipCost[item.productId]
-    
-  })
 
-  costItemShip = costItems + costShipping
-  costTax   = Math.floor(costItemShip / 10)
-  costTotal = costItemShip + costTax
+    costItems += productDetail.priceCents * item.quantity;
+    costShipping += sumShipCost[item.productId];
+  });
+
+  costItemShip = costItems + costShipping;
+  costTax = Math.floor(costItemShip / 10);
+  costTotal = costItemShip + costTax;
 
   // Display cost summary on page
-  document.querySelector('.cost-items').innerText     = `$${toDollar(costItems)}`;
-  document.querySelector('.cost-shipping').innerText  = `$${toDollar(costShipping)}`;
-  document.querySelector('.cost-item-ship').innerText = `$${toDollar(costItemShip)}`;
-  document.querySelector('.cost-tax').innerText       = `$${toDollar(costTax )}`;
-  document.querySelector('.cost-total').innerText     = `$ ${toDollar(costTotal)}`;
+  document.querySelector(".cost-items").innerText = `$${toDollar(costItems)}`;
+  document.querySelector(".cost-shipping").innerText = `$${toDollar(
+    costShipping
+  )}`;
+  document.querySelector(".cost-item-ship").innerText = `$${toDollar(
+    costItemShip
+  )}`;
+  document.querySelector(".cost-tax").innerText = `$${toDollar(costTax)}`;
+  document.querySelector(".cost-total").innerText = `$ ${toDollar(costTotal)}`;
 }
-
